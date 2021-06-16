@@ -1,4 +1,4 @@
-import React, { usestate, useContext, useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 
 const table = {
@@ -25,27 +25,65 @@ const AppProvider = ({ children }) => {
     difficulty: "easy",
   });
   const [isModalOpen, setIsmodelOpen] = useState(false);
-};
 
-const fetchQuestions = async (url) => {
-  setLoading(true);
-  setWaiting(false);
-  const response = await axios(url).catch((err) => console.log(err));
-  if (response) {
-    const data = response.data.results;
-    if (data.length > 0) {
-      setQuestions(data);
-      setLoading(false);
-      setWaiting(false);
-      setError(false);
+  const fetchQuestions = async (url) => {
+    setLoading(true);
+    setWaiting(false);
+    const response = await axios(url).catch((err) => console.log(err));
+    if (response) {
+      const data = response.data.results;
+      if (data.length > 0) {
+        setQuestions(data);
+        setLoading(false);
+        setWaiting(false);
+        setError(false);
+      } else {
+        setWaiting(true);
+        setError(true);
+      }
     } else {
       setWaiting(true);
-      setError(true);
     }
-  } else {
+  };
+
+  const closeModal = () => {
     setWaiting(true);
-  }
+    setCorrect(0);
+    setIsmodelOpen(false);
+  };
+
+  const handleChange = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    setQuiz({ ...quiz, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const { amount, category, difficulty } = quiz;
+    const url = `${API_ENDPOINT}amount=${amount}&difficulty=${difficulty}&category=${table[category]}%type=multiple`;
+    fetchQuestions(url);
+  };
+
+  return (
+    <AppContext.Provider
+      value={{
+        waiting,
+        loading,
+        questions,
+        index,
+        correct,
+        isModalOpen,
+        handleChange,
+        handleSubmit,
+        closeModal,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
 };
+
 export const useGlobalContext = () => {
   return useContext(AppContext);
 };
