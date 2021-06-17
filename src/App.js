@@ -6,8 +6,15 @@ import Modal from "./Modal";
 import Loading from "./Loading";
 
 function App() {
-  const { waiting, loading, questions, index, correct, nextQuestion } =
-    useGlobalContext();
+  const {
+    waiting,
+    loading,
+    questions,
+    index,
+    correct,
+    nextQuestion,
+    checkAnswer,
+  } = useGlobalContext();
   if (waiting) {
     return <SetupForm />;
   }
@@ -30,13 +37,27 @@ function App() {
     <main>
       <Modal />
       <section className="quiz">
-        <p>
+        <p className="correct-answer">
           correct answers: {correct}/{index}
         </p>
         <article className="container">
           <h2 dangerouslySetInnerHTML={{ __html: question }} />
-          <div className="btn-container">{answers.map}</div>
+          <div className="btn-container">
+            {answers.map((answer, index) => {
+              return (
+                <button
+                  key={index}
+                  className="answer-btn"
+                  onClick={() => checkAnswer(correct_answer === answer)}
+                  dangerouslySetInnerHTML={{ __html: answer }}
+                />
+              );
+            })}
+          </div>
         </article>
+        <button className="next-question-btn" onClick={nextQuestion}>
+          Next Question
+        </button>
       </section>
     </main>
   );

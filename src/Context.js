@@ -7,7 +7,7 @@ const table = {
   entertainment: 32,
 };
 
-const API_ENDPOINT = "https://opentdb.com/api.php";
+const API_ENDPOINT = "https://opentdb.com/api.php?";
 //const tempUrl = 'https://opentdb.com/api.php?amount=10&category=21&difficulty=easy&type=multiple
 
 const AppContext = React.createContext();
@@ -62,6 +62,13 @@ const AppProvider = ({ children }) => {
     });
   };
 
+  const checkAnswer = (value) => {
+    if (value) {
+      setCorrect((oldState) => oldState + 1);
+    }
+    nextQuestion();
+  };
+
   const closeModal = () => {
     setWaiting(true);
     setCorrect(0);
@@ -77,7 +84,7 @@ const AppProvider = ({ children }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { amount, category, difficulty } = quiz;
-    const url = `${API_ENDPOINT}amount=${amount}&difficulty=${difficulty}&category=${table[category]}%type=multiple`;
+    const url = `${API_ENDPOINT}amount=${amount}&difficulty=${difficulty}&category=${table[category]}&type=multiple`;
     fetchQuestions(url);
   };
 
@@ -95,6 +102,8 @@ const AppProvider = ({ children }) => {
         closeModal,
         nextQuestion,
         quiz,
+        checkAnswer,
+        error,
       }}
     >
       {children}
